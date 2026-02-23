@@ -1,0 +1,38 @@
+# ==============================
+# Dependencies (IGNORE ALL node_modules anywhere)
+# ==============================
+node_modules/
+
+# ==============================
+# React / Build Artifacts
+# ==============================
+build/
+coverage/
+
+# ==============================
+# Environment Files
+# ==============================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ==============================
+# OS / Misc
+# ==============================
+.DS_Store
+
+# ==============================
+# Logs
+# ==============================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# ==============================
+# SQLite Temp Files
+# ==============================
+*.sqlite-shm
+*.sqlite-wal
