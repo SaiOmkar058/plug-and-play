@@ -7,18 +7,20 @@ import AddSensor from "./AddSensor";
 import SensorDetails from "./SensorDetails";
 import "./Dashboard.css";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 function App() {
   const [sensors, setSensors] = useState([]);
   const [filteredSensors, setFilteredSensors] = useState([]);
 
   const fetchSensors = async () => {
-    const res = await axios.get("http://localhost:5000/sensors");
+    const res = await axios.get(`${API_URL}/sensors`);
     setSensors(res.data);
     setFilteredSensors(res.data);
   };
 
   const filterCategory = async (cat) => {
-    const res = await axios.get(`http://localhost:5000/category/${cat}`);
+    const res = await axios.get(`${API_URL}/category/${cat}`);
     setFilteredSensors(res.data);
   };
 
