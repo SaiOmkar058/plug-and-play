@@ -14,14 +14,24 @@ function App() {
   const [filteredSensors, setFilteredSensors] = useState([]);
 
   const fetchSensors = async () => {
-    const res = await axios.get(`${API_URL}/sensors`);
-    setSensors(res.data);
-    setFilteredSensors(res.data);
+    try {
+      const res = await axios.get(`${API_URL}/sensors`);
+      setSensors(res.data);
+      setFilteredSensors(res.data);
+    } catch (error) {
+      console.error("Failed to fetch sensors:", error);
+      alert(`Connection Error: ${error.message}\n\nPlease check if the backend API is reachable.`);
+    }
   };
 
   const filterCategory = async (cat) => {
-    const res = await axios.get(`${API_URL}/category/${cat}`);
-    setFilteredSensors(res.data);
+    try {
+      const res = await axios.get(`${API_URL}/category/${cat}`);
+      setFilteredSensors(res.data);
+    } catch (error) {
+      console.error("Failed to filter by category:", error);
+      alert(`Connection Error: ${error.message}`);
+    }
   };
 
   const handleSearch = (text) => {

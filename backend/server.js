@@ -4,7 +4,7 @@ const cors = require("cors");
 
 const app = express();
 app.use(cors({
-    origin: "*"
+  origin: "*"
 }));
 app.use(express.json());
 
@@ -21,7 +21,7 @@ const db = new sqlite3.Database("./sensors.db", (err) => {
 // =============================
 app.get("/sensors", (req, res) => {
   const query = `
-    SELECT sensor_id, sensor_name, manufacturer, category_name
+    SELECT sensor_id, sensor_name, manufacturer, category_name, image_url
     FROM sensors
     JOIN sensor_category USING(category_id)
   `;
@@ -39,7 +39,7 @@ app.get("/category/:name", (req, res) => {
   const category = req.params.name;
 
   const query = `
-    SELECT s.sensor_id, s.sensor_name, s.manufacturer, c.category_name
+    SELECT s.sensor_id, s.sensor_name, s.manufacturer, c.category_name, s.image_url
     FROM sensors s
     JOIN sensor_category c on s.category_id = c.category_id
     WHERE LOWER(c.category_name) = LOWER(?)
@@ -55,12 +55,12 @@ app.get("/category/:name", (req, res) => {
 // ADD SENSOR (simple version)
 // =============================
 app.post("/add", (req, res) => {
-  const { name, manufacturer, category_id } = req.body;
+  const { name, manufacturer, category_id, image_url } = req.body;
 
   db.run(
-    `INSERT INTO sensors (sensor_name, manufacturer, category_id, output_type, industrial_grade, application)
-     VALUES (?, ?, ?, 'Manual', 'Yes', 'Added from Admin')`,
-    [name, manufacturer, category_id],
+    `INSERT INTO sensors (sensor_name, manufacturer, category_id, output_type, industrial_grade, application, image_url)
+     VALUES (?, ?, ?, 'Manual', 'Yes', 'Added from Admin', ?)`,
+    [name, manufacturer, category_id, image_url],
     function (err) {
       if (err) return res.status(500).json(err);
       res.json({ message: "Sensor Added", id: this.lastID });
@@ -75,7 +75,7 @@ app.get("/sensor/:id", (req, res) => {
   const id = req.params.id;
 
   const query = `
-    SELECT s.sensor_name, s.manufacturer, c.category_name,
+    SELECT s.sensor_name, s.manufacturer, c.category_name, s.image_url,
            e.operating_voltage, e.power_consumption, e.interface_type,
            m.measurement_range, m.accuracy, m.sensitivity, m.response_time,
            env.operating_temperature, env.durability, env.mounting_type
