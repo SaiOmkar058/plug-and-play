@@ -62,23 +62,25 @@ const db = new sqlite3.Database("./sensors.db", (err) => {
   console.log("Connected to SQLite database.");
 
   // Step 1: Migration — add image_url if it doesn't exist
-  db.run("ALTER TABLE sensors ADD COLUMN image_url TEXT", (err) => {
-    if (err && !err.message.includes("duplicate column name")) {
-      console.error("Migration Error:", err.message);
+  db.run("ALTER TABLE sensors ADD COLUMN image_url TEXT", (migErr) => {
+    if (migErr && !migErr.message.includes("duplicate column name")) {
+      console.error("Migration Error:", migErr.message);
     } else {
       console.log("Migration: image_url column OK.");
     }
 
-    // Step 2: Auto-seed images on every server start (handles ephemeral DB on Render)
-    db.serialize(() => {
-      db.run("BEGIN TRANSACTION");
-      for (const [id, url] of Object.entries(SENSOR_IMAGES)) {
-        db.run("UPDATE sensors SET image_url = ? WHERE sensor_id = ?", [url, parseInt(id)]);
-      }
-      db.run("COMMIT", (err) => {
-        if (err) console.error("Auto-seed Error:", err.message);
-        else console.log("Auto-seed: All sensor image URLs applied.");
+    // Step 2: Auto-seed images on every server start
+    // (Render's ephemeral filesystem resets the DB on each deploy,
+    //  so we always re-apply image URLs right after connection)
+    const stmt = db.prepare("UPDATE sensors SET image_url = ? WHERE sensor_id = ?");
+    for (const [id, url] of Object.entries(SENSOR_IMAGES)) {
+      stmt.run(url, parseInt(id), (err) => {
+        if (err) console.error(`Seed error for sensor ${id}:`, err.message);
       });
+    }
+    stmt.finalize((err) => {
+      if (err) console.error("Seed finalize error:", err.message);
+      else console.log("Auto-seed: All sensor image URLs applied.");
     });
   });
 });
