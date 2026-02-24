@@ -106,12 +106,13 @@ app.get("/sensor/:id", (req, res) => {
   });
 });
 
+
 // =============================
-// TEMPORARY PROD SEEDER
+// PROD SEEDER — all 40 sensors
 // =============================
 app.get("/seed-prod", (req, res) => {
   const SENSOR_IMAGES = {
-    1: "https://cdn-shop.adafruit.com/970x728/1756-00.jpg",
+    1: "https://res.cloudinary.com/dxrfpaqpr/image/upload/v1771923074/lqnkmtggp9tb5a0qslwr.jpg",
     2: "https://robu.in/wp-content/uploads/2017/06/AM2302-DHT22-Digital-Temperature-and-Humidity-Sensor-Module-1.jpg",
     3: "https://www.sunrobotics.in/cdn/shop/files/DS18B20-Temperature-Sensor-Module-1-462x461.jpg?v=1746160155",
     4: "https://robu.in/wp-content/uploads/2017/06/AM2302-DHT22-Digital-Temperature-and-Humidity-Sensor-Module-1.jpg",
@@ -126,17 +127,17 @@ app.get("/seed-prod", (req, res) => {
     13: "https://thinkrobotics.com/cdn/shop/products/BNO055-Module2_535x.png?v=1673605453",
     14: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/4/14544-SparkFun_Current_Sensor_Breakout_-_ACS723__Low_Current_-01.jpg",
     15: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/4/14544-SparkFun_Current_Sensor_Breakout_-_ACS723__Low_Current_-01.jpg",
-    16: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/4/14544-SparkFun_Current_Sensor_Breakout_-_ACS723__Low_Current_-01.jpg",
-    17: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/4/14544-SparkFun_Current_Sensor_Breakout_-_ACS723__Low_Current_-01.jpg",
-    18: "https://cdn-shop.adafruit.com/970x728/904-09.jpg",
-    19: "https://cdn-shop.adafruit.com/970x728/904-09.jpg",
+    16: "https://cdn-shop.adafruit.com/970x728/904-09.jpg",
+    17: "https://cdn-shop.adafruit.com/970x728/904-09.jpg",
+    18: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/4/14544-SparkFun_Current_Sensor_Breakout_-_ACS723__Low_Current_-01.jpg",
+    19: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/4/14544-SparkFun_Current_Sensor_Breakout_-_ACS723__Low_Current_-01.jpg",
     20: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/4/14544-SparkFun_Current_Sensor_Breakout_-_ACS723__Low_Current_-01.jpg",
     21: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/4/14544-SparkFun_Current_Sensor_Breakout_-_ACS723__Low_Current_-01.jpg",
     22: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/4/14544-SparkFun_Current_Sensor_Breakout_-_ACS723__Low_Current_-01.jpg",
     23: "https://cdn-shop.adafruit.com/970x728/1713-03.jpg",
     24: "https://cdn-shop.adafruit.com/970x728/1713-03.jpg",
     25: "https://m.media-amazon.com/images/I/419rBd9kn2L._AC_UF1000,1000_QL80_.jpg",
-    26: "https://cdn-shop.adafruit.com/970x728/3421-03.jpg",
+    26: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/8/18011-SparkFun_Analog_MEMS_Microphone_Breakout_-_ICS-40180-01.jpg",
     27: "https://cdn-shop.adafruit.com/970x728/3421-03.jpg",
     28: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/8/18011-SparkFun_Analog_MEMS_Microphone_Breakout_-_ICS-40180-01.jpg",
     29: "https://www.sparkfun.com/media/catalog/product/cache/a793f13fd3d678cea13d28206895ba0c/1/8/18011-SparkFun_Analog_MEMS_Microphone_Breakout_-_ICS-40180-01.jpg",
@@ -156,11 +157,11 @@ app.get("/seed-prod", (req, res) => {
   db.serialize(() => {
     db.run("BEGIN TRANSACTION");
     for (const [id, url] of Object.entries(SENSOR_IMAGES)) {
-      db.run("UPDATE sensors SET image_url = ? WHERE sensor_id = ?", [url, id]);
+      db.run("UPDATE sensors SET image_url = ? WHERE sensor_id = ?", [url, parseInt(id)]);
     }
     db.run("COMMIT", (err) => {
       if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: "Production seeding triggered and committed" });
+      res.json({ message: "All 40 sensor images seeded", total: Object.keys(SENSOR_IMAGES).length });
     });
   });
 });
