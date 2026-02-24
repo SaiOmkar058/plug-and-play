@@ -161,6 +161,17 @@ app.get("/seed-prod", (req, res) => {
   res.json({ message: "Production seeding triggered" });
 });
 
+// =============================
+// TARGETED LM35 FIX
+// =============================
+app.get("/fix-lm35", (req, res) => {
+  const lm35Url = "https://m.media-amazon.com/images/I/41-N6N-+6nL._AC_UF1000,1000_QL80_.jpg";
+  db.run("UPDATE sensors SET image_url = ? WHERE sensor_id = 1", [lm35Url], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "LM35 Image Updated to Amazon Mirror", url: lm35Url });
+  });
+});
+
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
