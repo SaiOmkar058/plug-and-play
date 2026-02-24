@@ -14,6 +14,19 @@ const db = new sqlite3.Database("./sensors.db", (err) => {
     console.error(err.message);
   }
   console.log("Connected to SQLite database.");
+
+  // Migration: Ensure image_url column exists
+  db.run("ALTER TABLE sensors ADD COLUMN image_url TEXT", (err) => {
+    if (err) {
+      if (err.message.includes("duplicate column name")) {
+        console.log("Migration: image_url column already exists.");
+      } else {
+        console.error("Migration Error:", err.message);
+      }
+    } else {
+      console.log("Migration: image_url column added successfully.");
+    }
+  });
 });
 
 // =============================
