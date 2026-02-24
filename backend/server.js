@@ -111,7 +111,7 @@ app.get("/sensor/:id", (req, res) => {
 // =============================
 app.get("/seed-prod", (req, res) => {
   const SENSOR_IMAGES = {
-    1: "https://www.sunrobotics.in/cdn/shop/products/LM35-Temperature-Sensor-1.jpg?v=1545642672",
+    1: "https://cdn-shop.adafruit.com/970x728/1756-00.jpg",
     2: "https://robu.in/wp-content/uploads/2017/06/AM2302-DHT22-Digital-Temperature-and-Humidity-Sensor-Module-1.jpg",
     3: "https://www.sunrobotics.in/cdn/shop/files/DS18B20-Temperature-Sensor-Module-1-462x461.jpg?v=1746160155",
     4: "https://robu.in/wp-content/uploads/2017/06/AM2302-DHT22-Digital-Temperature-and-Humidity-Sensor-Module-1.jpg",
@@ -154,21 +154,14 @@ app.get("/seed-prod", (req, res) => {
   };
 
   db.serialize(() => {
+    db.run("BEGIN TRANSACTION");
     for (const [id, url] of Object.entries(SENSOR_IMAGES)) {
       db.run("UPDATE sensors SET image_url = ? WHERE sensor_id = ?", [url, id]);
     }
-  });
-  res.json({ message: "Production seeding triggered" });
-});
-
-// =============================
-// TARGETED LM35 FIX
-// =============================
-app.get("/fix-lm35", (req, res) => {
-  const lm35Url = "https://m.media-amazon.com/images/I/41-N6N-+6nL._AC_UF1000,1000_QL80_.jpg";
-  db.run("UPDATE sensors SET image_url = ? WHERE sensor_id = 1", [lm35Url], (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: "LM35 Image Updated to Amazon Mirror", url: lm35Url });
+    db.run("COMMIT", (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: "Production seeding triggered and committed" });
+    });
   });
 });
 
